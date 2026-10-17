@@ -1,25 +1,29 @@
-name: Membuat EXE C++
+name: Build C++ to EXE
 
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Mengambil kode
+      - name: Ambil kode
         uses: actions/checkout@v4
 
-      - name: Menyiapkan compiler
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install compiler Windows
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-mingw-w64-x86-64
 
-      - name: Compile C++
-        run: cl /EHsc main.cpp /Fe:program.exe
+      - name: Compile menjadi EXE
+        run: |
+          x86_64-w64-mingw32-g++ main.cpp -o mini-kasir.exe -static
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: program-exe
-          path: program.exe
+          name: mini-kasir-exe
+          path: mini-kasir.exe
