@@ -1,25 +1,42 @@
-name: Membuat EXE C++
+```yaml
+name: Build C++ to EXE
 
 on:
-  push:
   workflow_dispatch:
+  push:
+    paths:
+      - '**.cpp'
+      - '.github/workflows/build.yml'
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Mengambil kode
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Menyiapkan compiler
-        uses: ilammy/msvc-dev-cmd@v1
-
       - name: Compile C++
-        run: cl /EHsc main.cpp /Fe:program.exe
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -Path . -Filter *.cpp
+          if (-not $files) {
+            throw "File .cpp tidak ditemukan!"
+          }
+
+          foreach ($file in $files) {
+            $output = [System.IO.Path]::GetFileNameWithoutExtension($file.Name) + ".exe"
+            g++ $file.FullName -o $output
+
+            if ($LASTEXITCODE -ne 0) {
+              throw "Compile gagal: $($file.Name)"
+            }
+          }
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: program-exe
-          path: program.exe
+          name: hasil-exe-windows
+          path: '*.exe'
+          if-no-files-found: error
+```
