@@ -20,8 +20,21 @@ jobs:
 
       - name: Compile menjadi EXE
         run: |
-          ls -la
-          x86_64-w64-mingw32-g++ main.cpp -o mini-kasir.exe -static
+          echo "Daftar file:"
+          find . -maxdepth 5 -type f
+
+          SOURCE=$(find . -type f -iname "*.cpp" \
+            -not -path "./.git/*" | head -n 1)
+
+          if [ -z "$SOURCE" ]; then
+            echo "ERROR: File CPP tidak ditemukan!"
+            exit 1
+          fi
+
+          echo "File yang dikompilasi: $SOURCE"
+
+          x86_64-w64-mingw32-g++ \
+            "$SOURCE" -o mini-kasir.exe -static
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
