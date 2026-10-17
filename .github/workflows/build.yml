@@ -20,6 +20,7 @@ jobs:
 
       - name: Compile menjadi EXE
         run: |
+          ls -la
           x86_64-w64-mingw32-g++ main.cpp -o mini-kasir.exe -static
 
       - name: Upload EXE
